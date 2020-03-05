@@ -106,8 +106,8 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
             LOG.info("Media Library source disabled. Skipped.")
 
         # Favorite sources (query server)
+        self.sources["favorite"] = defaultdict(dict)
         if self.favorite_source_enabled:
-            self.sources["favorite"] = defaultdict(dict)
             favorites = self.lms.get_favorites()
             for favorite in favorites:
                 try:
@@ -131,8 +131,8 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
             LOG.info("Favorite source disabled. Skipped.")
 
         # Playlist sources (query server)
+        self.sources["playlist"] = defaultdict(dict)
         if self.playlist_source_enabled:
-            self.sources["playlist"] = defaultdict(dict)
             playlists = self.lms.get_playlists()
             for playlist in playlists:
                 try:
@@ -152,8 +152,8 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
             LOG.info("Playlist source disabled. Skipped.")
 
         # Podcast sources (query server)
+        self.sources["podcast"] = defaultdict(dict)
         if self.podcast_source_enabled:
-            self.sources["podcast"] = defaultdict(dict)
             podcasts = self.lms.get_podcasts(default_playerid)
             for podcast in podcasts:
                 try:
@@ -463,127 +463,148 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
     # Get best playlist match and confidence
     def get_best_playlist(self, playlist):
         LOG.debug("get_best_playlist: playlist={}".format(playlist))
-        key, confidence = extractOne(
-            playlist.lower(),
-            self.sources["playlist"].keys(),
-            processor=self.processor,
-            scorer=self.scorer,
-            score_cutoff=0,
-        )
-        confidence = confidence / 100.0
-        LOG.debug(
-            "get_best_playlist: Chose key={}, confidence={}".format(
-                key, confidence
+        key = None
+        confidence = 0
+        if len(self.sources["playlist"]) != 0:
+            key, confidence = extractOne(
+                playlist.lower(),
+                self.sources["playlist"].keys(),
+                processor=self.processor,
+                scorer=self.scorer,
+                score_cutoff=0,
             )
-        )
+            confidence = confidence / 100.0
+            LOG.debug(
+                "get_best_playlist: Chose key={}, confidence={}".format(
+                    key, confidence
+                )
+            )
         return key, confidence
 
     # Get best album match and confidence
     def get_best_album(self, album):
         LOG.debug("get_best_album: album={}".format(album))
-        key, confidence = extractOne(
-            album.lower(),
-            self.sources["album"].keys(),
-            processor=self.processor,
-            scorer=self.scorer,
-            score_cutoff=0,
-        )
-        confidence = confidence / 100.0
-        LOG.debug(
-            "get_best_album: Chose key={}, confidence={}".format(
-                key, confidence
+        key = None
+        confidence = 0
+        if len(self.sources["album"]) != 0:
+            key, confidence = extractOne(
+                album.lower(),
+                self.sources["album"].keys(),
+                processor=self.processor,
+                scorer=self.scorer,
+                score_cutoff=0,
             )
-        )
+            confidence = confidence / 100.0
+            LOG.debug(
+                "get_best_album: Chose key={}, confidence={}".format(
+                    key, confidence
+                )
+            )
         return key, confidence
 
     # Get best artist match and confidence
     def get_best_artist(self, artist):
         LOG.debug("get_best_artist: artist={}".format(artist))
-        key, confidence = extractOne(
-            artist.lower(),
-            self.sources["artist"].keys(),
-            processor=self.processor,
-            scorer=self.scorer,
-            score_cutoff=0,
-        )
-        confidence = confidence / 100.0
-        LOG.debug(
-            "get_best_artist: Chose key={}, confidence={}".format(
-                key, confidence
+        key = None
+        confidence = 0
+        if len(self.sources["artist"]) != 0:
+            key, confidence = extractOne(
+                artist.lower(),
+                self.sources["artist"].keys(),
+                processor=self.processor,
+                scorer=self.scorer,
+                score_cutoff=0,
             )
-        )
+            confidence = confidence / 100.0
+            LOG.debug(
+                "get_best_artist: Chose key={}, confidence={}".format(
+                    key, confidence
+                )
+            )
         return key, confidence
 
     # Get best favorite match and confidence
     def get_best_favorite(self, favorite):
         LOG.debug("get_best_favorite: favorite={}".format(favorite))
-        key, confidence = extractOne(
-            favorite.lower(),
-            self.sources["favorite"].keys(),
-            processor=self.processor,
-            scorer=self.scorer,
-            score_cutoff=0,
-        )
-        confidence = confidence / 100.0
-        LOG.debug(
-            "get_best_favorite: Chose key={}, confidence={}".format(
-                key, confidence
+        key = None
+        confidence = 0
+        if len(self.sources["favorite"]) != 0:
+            key, confidence = extractOne(
+                favorite.lower(),
+                self.sources["favorite"].keys(),
+                processor=self.processor,
+                scorer=self.scorer,
+                score_cutoff=0,
             )
-        )
+            confidence = confidence / 100.0
+            LOG.debug(
+                "get_best_favorite: Chose key={}, confidence={}".format(
+                    key, confidence
+                )
+            )
         return key, confidence
 
     # Get best genre match and confidence
     def get_best_genre(self, genre):
         LOG.debug("get_best_genre: genre={}".format(genre))
-        key, confidence = extractOne(
-            genre.lower(),
-            self.sources["genre"].keys(),
-            processor=self.processor,
-            scorer=self.scorer,
-            score_cutoff=0,
-        )
-        confidence = confidence / 100.0
-        LOG.debug(
-            "get_best_genre: Chose key={}, confidence={}".format(
-                key, confidence
+        key = None
+        confidence = 0
+        if len(self.sources["genre"]) != 0:
+            key, confidence = extractOne(
+                genre.lower(),
+                self.sources["genre"].keys(),
+                processor=self.processor,
+                scorer=self.scorer,
+                score_cutoff=0,
             )
-        )
+            confidence = confidence / 100.0
+            LOG.debug(
+                "get_best_genre: Chose key={}, confidence={}".format(
+                    key, confidence
+                )
+            )
         return key, confidence
 
     # Get best podcast match and confidence
     def get_best_podcast(self, podcast):
         LOG.debug("get_best_podcast: podcast={}".format(podcast))
-        key, confidence = extractOne(
-            podcast.lower(),
-            self.sources["podcast"].keys(),
-            processor=self.processor,
-            scorer=self.scorer,
-            score_cutoff=0,
-        )
-        confidence = confidence / 100.0
-        LOG.debug(
-            "get_best_podcast: Chose key={}, confidence={}".format(
-                key, confidence
+        key = None
+        confidence = 0
+        if len(self.sources["podcast"]) != 0:
+            key, confidence = extractOne(
+                podcast.lower(),
+                self.sources["podcast"].keys(),
+                processor=self.processor,
+                scorer=self.scorer,
+                score_cutoff=0,
             )
-        )
+            confidence = confidence / 100.0
+            LOG.debug(
+                "get_best_podcast: Chose key={}, confidence={}".format(
+                    key, confidence
+                )
+            )
         return key, confidence
 
     # Get best title match and confidence
     def get_best_title(self, title):
         LOG.debug("get_best_title: title={}".format(title))
-        key, confidence = extractOne(
-            title.lower(),
-            self.sources["title"].keys(),
-            processor=self.processor,
-            scorer=self.scorer,
-            score_cutoff=0,
-        )
-        confidence = confidence / 100.0
-        LOG.debug(
-            "get_best_title: Chose key={}, confidence={}".format(
-                key, confidence
+        key = None
+        confidence = 0
+        if len(self.sources["title"]) != 0:
+            key, confidence = extractOne(
+                title.lower(),
+                self.sources["title"].keys(),
+                processor=self.processor,
+                scorer=self.scorer,
+                score_cutoff=0,
             )
-        )
+            confidence = confidence / 100.0
+            LOG.debug(
+                "get_best_title: Chose key={}, confidence={}".format(
+                    key, confidence
+                )
+            )
         return key, confidence
 
     ######################################################################
