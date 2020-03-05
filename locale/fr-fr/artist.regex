@@ -1,0 +1,1 @@
+(l'|le |)(artist|groupe|quelque chose par|de la musique de|de la musique par) (?P<artist>.+)
