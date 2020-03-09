@@ -51,6 +51,7 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
         self.add_event("mycroft.audio.service.resume", self.handle_resume)
 
         self.settings_change_callback = self.get_settings
+        self.get_settings()
 
     def get_settings(self):
         LOG.debug("Settings: {}".format(self.settings))
@@ -82,8 +83,12 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
         self.podcast_source_enabled = self.settings.get(
             "podcast_source_enabled", True
         )
-
-        self.get_sources("connecting...")
+        try:
+            self.get_sources("connecting...")
+        except Exception as e:
+            LOG.error(
+                "Could not load database. Exception: {}".format(e)
+            )
 
     # Regex handler
     def translate_regex(self, regex):
@@ -158,9 +163,9 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
         # Podcast sources (query server)
         self.sources["podcast"] = defaultdict(dict)
         if self.podcast_source_enabled:
-            podcasts = self.lms.get_podcasts(default_playerid)
-            for podcast in podcasts:
-                try:
+            try:
+                podcasts = self.lms.get_podcasts(default_playerid)
+                for podcast in podcasts:
                     if not self.sources["podcast"][podcast["name"]]:
                         if (
                             not podcast["hasitems"] == 0
@@ -172,10 +177,10 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
                             LOG.debug(
                                 "Loaded podcast: {}".format(podcast["name"])
                             )
-                except Exception as e:
-                    LOG.warning(
-                        "Failed to load podcast. Exception: {}".format(e)
-                    )
+            except Exception as e:
+                LOG.warning(
+                    "Failed to load podcast. Exception: {}".format(e)
+                )
             LOG.info("Loaded podcasts")
         else:
             LOG.info("Podcast source disabled. Skipped.")
