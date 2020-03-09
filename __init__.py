@@ -181,7 +181,10 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
     # Get playerid matching input (fallback to default_player_name setting)
     def get_playerid(self, backend):
         if backend is None:
-            backend = self.default_player_name.title()
+            if self.default_player_name is not None:
+                backend = self.default_player_name.title()
+            else:
+                backend = ""
         LOG.debug("Requested backend: {}".format(backend))
         players = self.lms.get_players()
         player_names = []
@@ -801,11 +804,12 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
             LOG.debug(
                 "specific_query: favorite confidence={}".format(confidence)
             )
-            favorite_id = self.sources["favorite"][favorite]["favorite_id"]
-            return (
-                confidence,
-                {"data": favorite_id, "name": favorite, "type": "favorite"},
-            )
+            if "favorite_id" in self.sources["favorite"][favorite]:
+                favorite_id = self.sources["favorite"][favorite]["favorite_id"]
+                return (
+                    confidence,
+                    {"data": favorite_id, "name": favorite, "type": "favorite"},
+                )
 
         # Check podcast
         match = re.match(self.translate_regex("podcast"), phrase)
