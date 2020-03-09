@@ -1,1 +1,1 @@
-(de |un peu de |)musique (?P<music>.+)
+(de |de la |un peu de |)musique (?P<music>.+)

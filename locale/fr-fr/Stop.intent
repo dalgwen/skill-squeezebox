@@ -1,1 +1,1 @@
-(arrête|coupe|éteins|stoppe|stop) (musique|jouer|jouer la musique|jouer le podcast|écouter la radio|la radio|playlist|play list|jouer la playlist|jouer la play list|podcast|pod cast|radio|la musique|la playlist|la play list|le podcast|le pod cast)( sur| dans| avec|)( {{backend}}|)
+(arrête|arrête de|coupe|éteins|stoppe|stop) (la musique|jouer|jouer la musique|jouer le podcast|écouter la radio|la radio|la liste de lecture|jouer la liste de lecture|jouer la play list|podcast|pod cast|radio|la playlist|la play list|le podcast|le pod cast)( sur| dans| avec|)( {{backend}}|)
