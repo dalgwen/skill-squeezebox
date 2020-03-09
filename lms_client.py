@@ -275,9 +275,7 @@ class LMSClient(object):
                 [
                     "playlist",
                     "play",
-                    "/var/lib/squeezeboxserver/playlists/{}.m3u".format(
-                        playlist
-                    ),
+                    playlist
                 ],
             ],
         }
