@@ -19,18 +19,6 @@ __author__ = "johanpalmqvist"
 class SqueezeBoxMediaSkill(CommonPlaySkill):
     def __init__(self):
         super(SqueezeBoxMediaSkill, self).__init__("SqueezeBox Media Skill")
-
-    def initialize(self):
-        LOG.info("Initializing SqueezeBox Media skill")
-        super().initialize()
-        # Setup handlers for playback control messages
-        self.add_event("mycroft.audio.service.next", self.handle_nexttrack)
-        self.add_event("mycroft.audio.service.prev", self.handle_previoustrack)
-        self.add_event("mycroft.audio.service.pause", self.handle_pause)
-        self.add_event("mycroft.audio.service.resume", self.handle_resume)
-
-        self.settings_change_callback = self.get_settings
-
         self.sources_cache_filename = join(
             abspath(dirname(__file__)), "sources_cache.json.gz"
         )
@@ -43,6 +31,26 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
         self.scorer = QRatio
         self.processor = full_process
         self.regexes = {}
+        self.lms = None
+
+        self.default_player_name = ""
+        self.speak_dialog_enabled = False
+        self.media_library_source_enabled = True
+        self.favorite_source_enabled = True
+        self.playlist_source_enabled = True
+        self.podcast_source_enabled = True
+        self.sources = defaultdict(dict)
+
+    def initialize(self):
+        LOG.info("Initializing SqueezeBox Media skill")
+        super().initialize()
+        # Setup handlers for playback control messages
+        self.add_event("mycroft.audio.service.next", self.handle_nexttrack)
+        self.add_event("mycroft.audio.service.prev", self.handle_previoustrack)
+        self.add_event("mycroft.audio.service.pause", self.handle_pause)
+        self.add_event("mycroft.audio.service.resume", self.handle_resume)
+
+        self.settings_change_callback = self.get_settings
 
     def get_settings(self):
         LOG.debug("Settings: {}".format(self.settings))
@@ -58,11 +66,7 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
                 "Could not load server configuration. Exception: {}".format(e)
             )
             raise ValueError("Could not load server configuration.")
-        try:
-            self.default_player_name = self.settings.get("default_player_name")
-        except Exception as e:
-            LOG.error("Default player name not set. Exception: {}".format(e))
-            raise ValueError("Default player name not set.")
+        self.default_player_name = self.settings.get("default_player_name", "")
         self.speak_dialog_enabled = self.settings.get(
             "speak_dialog_enabled", False
         )
