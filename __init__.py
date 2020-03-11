@@ -1,6 +1,7 @@
 import gzip
 import json
 import re
+from calendar import _localized_month
 from collections import defaultdict
 from fuzzywuzzy.process import extractOne
 from fuzzywuzzy.fuzz import QRatio
@@ -86,9 +87,7 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
         try:
             self.get_sources("connecting...")
         except Exception as e:
-            LOG.error(
-                "Could not load database. Exception: {}".format(e)
-            )
+            LOG.error("Could not load database. Exception: {}".format(e))
 
     # Regex handler
     def translate_regex(self, regex):
@@ -189,22 +188,21 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
 
     # Get playerid matching input (fallback to default_player_name setting)
     def get_playerid(self, backend):
+
+        lmsplayers = self.lms.get_players()
+        if not lmsplayers:
+            LOG.error("No player available")
+            return None, None
+
         if backend is None:
             if self.default_player_name is not None:
                 backend = self.default_player_name.title()
             else:
                 backend = ""
         LOG.debug("Requested backend: {}".format(backend))
-        players = self.lms.get_players()
-        player_names = []
-        for player in players:
-            LOG.debug(
-                "Playerid={}, Name={}".format(
-                    player["playerid"], player["name"]
-                )
-            )
-            player_names.append(player["name"])
-        key, confidence = extractOne(
+        players_id_by_name = {i["name"]: i["playerid"] for i in lmsplayers}
+        player_names = players_id_by_name.keys()
+        extracted_player_name, confidence = extractOne(
             backend,
             player_names,
             processor=self.processor,
@@ -214,18 +212,12 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
         confidence = confidence / 100.0
         LOG.debug("Player confidence: {}".format(confidence))
         if confidence > 0.5:
-            extracted_player_name = key
             LOG.debug("Extracted backend: {}".format(extracted_player_name))
+            return extracted_player_name, players_id_by_name[extracted_player_name]
         else:
             LOG.error("Couldn't find player matching: {}".format(backend))
-            data = {"backend": backend}
-            self.play_dialog("playernotfound.wav", "playernotfound", data)
-            return None, None
-        for player in players:
-            if extracted_player_name == player["name"]:
-                backend = player["name"]
-                playerid = player["playerid"]
-        return backend, playerid
+            # fallback to first found
+            return lmsplayers[0]["name"], lmsplayers[0]["playerid"]
 
     # Get backend name from phrase
     def get_backend(self, phrase):
