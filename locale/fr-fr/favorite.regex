@@ -1,1 +1,1 @@
-(le| la |)(favori|favoris|radio|station|station de radio) (?P<favorite>.+)
+(le |la |une |un )(favori|favoris|radio|station|station de radio) (?P<favorite>.+)
