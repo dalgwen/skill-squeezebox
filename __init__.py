@@ -422,7 +422,7 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
 
     # Update library cache file if LMS library seems to differ depending on
     # library total duration
-    def update_library_cache(self):
+    def update_library_cache(self, force=False):
         library_cache = False
         if isfile(self.library_cache_filename):
             if stat(self.library_cache_filename).st_size > 26:
@@ -431,6 +431,7 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
             self.lms.get_library_total_duration()
             == self.load_library_total_duration()
             and library_cache
+            and not force
         ):
             LOG.info("Library total duration unchanged. Not updating cache.")
             return False
@@ -1102,6 +1103,13 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
         else:
             data = {}
             self.play_dialog("cachenotupdated.wav", "cachenotupdated", data)
+
+    @intent_file_handler("ForceUpdateCache.intent")
+    def handle_forceupdatecache(self, message):
+        LOG.info("Handling forced update cache request")
+        self.update_library_cache(True)
+        data = {}
+        self.play_dialog("cacheupdated.wav", "cacheupdated", data)
 
 
 def create_skill():
