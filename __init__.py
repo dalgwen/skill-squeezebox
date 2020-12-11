@@ -93,7 +93,7 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
     # Regex handler
     def translate_regex(self, regex):
         if regex not in self.regexes:
-            path = self.find_resource(regex + ".regex")
+            path = self.find_resource(regex + ".reg", "resourceregex")
             if path:
                 with open(path) as f:
                     string = f.read().strip()
@@ -867,7 +867,7 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
         genre, conf = self.get_best_genre(phrase)
         if conf > 0.7:
             genre_id = self.sources["genre"][genre]["genre_id"]
-            return (conf, {"data": genre_id, "name": genre, "type": "genre"})
+            return conf, {"data": genre_id, "name": genre, "type": "genre"}
         artist, conf = self.get_best_artist(phrase)
         if conf > 0.7:
             artist_id = self.sources["artist"][artist]["artist_id"]
@@ -878,11 +878,11 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
         album, conf = self.get_best_album(phrase)
         if conf > 0.7:
             album_id = self.sources["album"][album]["album_id"]
-            return (conf, {"data": album_id, "name": album, "type": "album"})
+            return conf, {"data": album_id, "name": album, "type": "album"}
         title, conf = self.get_best_title(phrase)
         if conf > 0.7:
             url = self.sources["title"][title]["url"]
-            return (conf, {"data": url, "name": title, "type": "title"})
+            return conf, {"data": url, "name": title, "type": "title"}
 
         return None, None
 
