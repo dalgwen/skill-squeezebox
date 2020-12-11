@@ -105,3 +105,5 @@ venv.bak/
 
 # Mycroft user settings
 settings.json
+
+*.gz

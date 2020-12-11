@@ -162,7 +162,6 @@ class LMSClient(object):
 
     # Add artist to playlist and start playback
     def play_artist(self, playerid, artist_id):
-        self.playlist_shuffle(playerid, 1)
         self.playlist_repeat(playerid, 2)
         payload = {
             "id": 1,
@@ -180,7 +179,6 @@ class LMSClient(object):
 
     # Add album to playlist and start playback
     def play_album(self, playerid, album_id):
-        self.playlist_shuffle(playerid, 1)
         self.playlist_repeat(playerid, 2)
         payload = {
             "id": 1,
@@ -194,7 +192,6 @@ class LMSClient(object):
 
     # Add genre to playlist and start playback
     def play_genre(self, playerid, genre_id):
-        self.playlist_shuffle(playerid, 1)
         self.playlist_repeat(playerid, 2)
         payload = {
             "id": 1,
@@ -209,7 +206,6 @@ class LMSClient(object):
     # Add tracklist to playlist and start playback
     def play_tracklist(self, playerid, tracklist):
         self.playlist_clear(playerid)
-        self.playlist_shuffle(playerid, 1)
         self.playlist_repeat(playerid, 2)
         for track in tracklist:
             payload = {
@@ -227,7 +223,6 @@ class LMSClient(object):
 
     # Add favorite to playlist and start playback
     def play_favorite(self, playerid, favorite_id):
-        self.playlist_shuffle(playerid, 0)
         self.playlist_repeat(playerid, 0)
         payload = {
             "id": 1,
@@ -246,7 +241,6 @@ class LMSClient(object):
 
     # Add podcast to playlist and start playback
     def play_podcast(self, playerid, podcast_id):
-        self.playlist_shuffle(playerid, 0)
         self.playlist_repeat(playerid, 0)
         payload = {
             "id": 1,
@@ -265,7 +259,6 @@ class LMSClient(object):
 
     # Load playlist from server and start playback
     def play_playlist(self, playerid, playlist):
-        self.playlist_shuffle(playerid, 1)
         self.playlist_repeat(playerid, 2)
         payload = {
             "id": 1,

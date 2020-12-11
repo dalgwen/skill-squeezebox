@@ -1,6 +1,7 @@
 import gzip
 import json
 import re
+import socket
 from calendar import _localized_month
 from collections import defaultdict
 from fuzzywuzzy.process import extractOne
@@ -120,8 +121,8 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
             for favorite in favorites:
                 try:
                     if not self.sources["favorite"][favorite["name"]]:
-                        if (
-                            "audio" in favorite["type"]
+                        if (favorite.get("type") is not None
+                            and "audio" in favorite["type"]
                             and favorite["isaudio"] == 1
                         ):
                             self.sources["favorite"][favorite["name"]][
@@ -195,10 +196,8 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
             return None, None
 
         if backend is None:
-            if self.default_player_name is not None:
-                backend = self.default_player_name.title()
-            else:
-                backend = ""
+            backend = socket.gethostname()
+
         LOG.debug("Requested backend: {}".format(backend))
         players_id_by_name = {i["name"]: i["playerid"] for i in lmsplayers}
         player_names = players_id_by_name.keys()
@@ -215,9 +214,14 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
             LOG.debug("Extracted backend: {}".format(extracted_player_name))
             return extracted_player_name, players_id_by_name[extracted_player_name]
         else:
-            LOG.error("Couldn't find player matching: {}".format(backend))
-            # fallback to first found
-            return lmsplayers[0]["name"], lmsplayers[0]["playerid"]
+            if self.default_player_name is not None:
+                for lmsplayer in lmsplayers:
+                    if lmsplayer["name"] == self.default_player_name:
+                        return lmsplayer["name"], lmsplayer["playerid"]
+            else:
+                LOG.error("Couldn't find player matching: {}".format(backend))
+                # fallback to first found
+                return lmsplayers[0]["name"], lmsplayers[0]["playerid"]
 
     # Get backend name from phrase
     def get_backend(self, phrase):
@@ -616,6 +620,7 @@ class SqueezeBoxMediaSkill(CommonPlaySkill):
     # Intent handling
     def CPS_match_query_phrase(self, phrase):
         LOG.debug("CPS_match_query_phrase={}".format(phrase))
+        phrase = phrase.replace("joue", "")
 
         match = re.search(self.translate_regex("squeezebox_bonus"), phrase)
         if match:
